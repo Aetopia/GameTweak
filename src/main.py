@@ -1,24 +1,33 @@
-from argparse import ArgumentParser
-from execute import parse_n_run
-import sys
 import os
-from traceback import format_exc, print_exc
+import sys
+from argparse import ArgumentParser
+from sys import exit
+from traceback import format_exc
+
 from win32api import MessageBox
+
+from execute import parse_n_run
+
 if os.path.splitext(__file__) == '.py':
     sys.path.append(os.path.dirname(__file__))
 
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('-e')
-    parser.add_argument('-p')
-    parser.add_argument('-dm')
+    parser.add_argument('--executable', '-e', help='Executable to run.',
+                        required=True, nargs=1, type=str)
+
+    parser.add_argument(
+        '--priority', '-p', help='Set the process priority of the specified executable.', default=None, nargs=1)
+
+    parser.add_argument('--displaymode', '-dm',
+                        help='Set the display mode for the specified executable.', default=None, nargs=1, type=str)
     parse_n_run(parser.parse_args())
 
 
 if __name__ == '__main__':
     try:
         main()
-    except:
-        MessageBox(None, format_exc(), 'Error', 0)
-        
+    except Exception as e:
+        MessageBox(None, format_exc(), str(e), 0)
+        exit(1)

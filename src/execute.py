@@ -1,36 +1,44 @@
-from getpass import getpass
 from time import sleep
 import psutil
 from threading import Thread
 
-from utils import priority_handler
 from win32api import ChangeDisplaySettings
-from utils import get_active_window, display_mode
-
+from utils import *
+from os import _exit
 
 def parse_n_run(namespace):
-    exe = namespace.e
-    dm = namespace.dm
-    pri = namespace.p
+    exe = namespace.executable[0]
+    dm = namespace.displaymode[0]
+    pri = namespace.priority[0]
+    process_check = False
 
     print(f'''
-Executable: {exe}
-Display mode: {dm}
-Priority: {pri.lower().capitalize()}''')
+Executable: {str(exe)}
+Display Mode: {str(dm)}
+Priority: {str(pri).lower().capitalize()}''')
 
     process = psutil.Popen(exe)
-    if pri is not None:
-        process.nice(priority_handler(pri))
-    Thread(target=check_process, args=(process.is_running, )).start()
+
+    if pri != None:
+        process.nice(priority_class(pri))
+
     if dm != None:
-        display_mode_handler(exe, dm).apply()
+        """
+        Isolates the Display Mode Handler in a separate thread.
+        """
+        Thread(target=display_mode_handler, args=(exe, dm)).start()
+        process_check = True
+    
+    if process_check:
+        check_process(process.is_running)
+    
 
 
 def check_process(check: bool):
     while True:
         if check() is False:
-            exit()
-        sleep(0.1)
+            _exit(0)
+        sleep(delay())
 
 
 class display_mode_handler():
@@ -41,12 +49,14 @@ class display_mode_handler():
     def __init__(self, exe, dm) -> None:
         self.exe = exe
         self.dm = dm
+        self.delay = delay()
+        self.apply()
 
     def apply(self):
         apply = False
         while True:
             try:
-                sleep(0.1)
+                sleep(self.delay)
                 if self.exe == get_active_window():
                     apply = True
 
@@ -61,7 +71,7 @@ class display_mode_handler():
         reset = False
         while True:
             try:
-                sleep(0.1)
+                sleep(self.delay)
                 if self.exe != get_active_window():
                     reset = True
 
