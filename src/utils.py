@@ -1,13 +1,14 @@
 from multiprocessing import cpu_count
 
-from psutil import Process, HIGH_PRIORITY_CLASS, ABOVE_NORMAL_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS
-from win32gui import GetForegroundWindow
-from win32process import GetWindowThreadProcessId
+from psutil import (ABOVE_NORMAL_PRIORITY_CLASS, HIGH_PRIORITY_CLASS,
+                    NORMAL_PRIORITY_CLASS, Process)
 from pywintypes import DEVMODEType
 from win32con import DM_PELSHEIGHT, DM_PELSWIDTH
+from win32gui import GetForegroundWindow
+from win32process import GetWindowThreadProcessId
 
 
-def delay() -> float:
+def autodelay() -> float:
     """
     Returns a appropriate delay for the current CPU count.
     """

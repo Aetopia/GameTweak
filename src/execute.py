@@ -1,16 +1,20 @@
-from time import sleep
-import psutil
-from threading import Thread
-
-from win32api import ChangeDisplaySettings
-from utils import *
 from os import _exit
+from threading import Thread
+from time import sleep
+
+import psutil
+from win32api import ChangeDisplaySettings
+
+from utils import *
+
 
 def parse_n_run(namespace):
+    # For some reason, each argument is stored as a list in the namespace. (I will likely fix this in a future update.)
     exe = namespace.executable[0]
     dm = namespace.displaymode[0]
     pri = namespace.priority[0]
     process_check = False
+    delay = autodelay()
 
     print(f'''
 Executable: {str(exe)}
@@ -19,10 +23,10 @@ Priority: {str(pri).lower().capitalize()}''')
 
     process = psutil.Popen(exe)
 
-    if pri != None:
+    if pri:
         process.nice(priority_class(pri))
 
-    if dm != None:
+    if dm:
         """
         Isolates the Display Mode Handler in a separate thread.
         """
@@ -30,15 +34,12 @@ Priority: {str(pri).lower().capitalize()}''')
         process_check = True
     
     if process_check:
-        check_process(process.is_running)
+        while True:
+            if process.is_running() is False:
+                _exit(0)
+            sleep(delay)
     
-
-
-def check_process(check: bool):
-    while True:
-        if check() is False:
-            _exit(0)
-        sleep(delay())
+    
 
 
 class display_mode_handler():
@@ -49,7 +50,7 @@ class display_mode_handler():
     def __init__(self, exe, dm) -> None:
         self.exe = exe
         self.dm = dm
-        self.delay = delay()
+        self.delay = autodelay()
         self.apply()
 
     def apply(self):
