@@ -1,7 +1,6 @@
 import os
 import sys
 from argparse import ArgumentParser
-from sys import exit
 from traceback import format_exc
 
 from win32api import MessageBox
@@ -31,4 +30,4 @@ if __name__ == '__main__':
         main()
     except Exception as e:
         MessageBox(None, format_exc(), str(e), 0)
-        exit(1)
+        os._exit(1)
