@@ -10,7 +10,7 @@ GameTweak is a simple CLI tool that you allows to apply optimizations to your fa
 Find pre-compiled binaries here: [GitHub Releases](https://github.com/Aetopia/GameTweak/releases)
 
 # Documentation
-Check out the Docs: https://github.com/Aetopia/GameTweak/Wiki
+Check out the Docs: https://github.com/Aetopia/GameTweak/wiki
 
 # Building and Requirements
 1. Install through `pip`
