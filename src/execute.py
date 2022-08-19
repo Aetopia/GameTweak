@@ -1,3 +1,4 @@
+from argparse import Namespace
 from os import _exit
 from threading import Thread
 from time import sleep
@@ -8,7 +9,7 @@ from win32api import ChangeDisplaySettings
 from utils import *
 
 
-def parse_n_run(namespace):
+def parse_n_run(namespace: Namespace):
     # For some reason, each argument is stored as a list in the namespace. (I will likely fix this in a future update.)
     exe = namespace.executable[0]
     dm = namespace.displaymode[0]
@@ -32,14 +33,15 @@ Priority: {str(pri).lower().capitalize()}''')
         """
         Thread(target=display_mode_handler, args=(exe, dm)).start()
         process_check = True
-    
+
     if process_check:
         while True:
             if process.is_running() is False:
+                sleep(1)
                 _exit(0)
             sleep(delay)
-    
-    
+
+# Handlers
 
 
 class display_mode_handler():
@@ -47,10 +49,11 @@ class display_mode_handler():
     Display Mode Handler
     """
 
-    def __init__(self, exe, dm) -> None:
+    def __init__(self, exe: str, dm: str) -> None:
         self.exe = exe
-        self.dm = dm
+        self.dm = display_mode(dm)
         self.delay = autodelay()
+        self.exceptions = psutil.NoSuchProcess, ValueError
         self.apply()
 
     def apply(self):
@@ -62,9 +65,9 @@ class display_mode_handler():
                     apply = True
 
                 if apply:
-                    ChangeDisplaySettings(display_mode(self.dm), 0)
+                    ChangeDisplaySettings(self.dm, 0)
                     break
-            except (psutil.NoSuchProcess, ValueError):
+            except (self.exceptions):
                 pass
         self.reset()
 
@@ -79,6 +82,6 @@ class display_mode_handler():
                 if reset:
                     ChangeDisplaySettings(None, 0)
                     break
-            except (psutil.NoSuchProcess, ValueError):
+            except (self.exceptions):
                 pass
         self.apply()
