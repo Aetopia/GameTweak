@@ -1,5 +1,8 @@
 from subprocess import run
 from glob import glob
+from shutil import rmtree
+rmtree('src\\__pycache__', ignore_errors=True)
+
 files = [f'--include-plugin-files={file}' for file in glob('src/*.py')]
 files.remove('--include-plugin-files=src\\main.py')
 
