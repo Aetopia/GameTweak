@@ -10,7 +10,7 @@ from execute import parse_n_run
 if os.path.splitext(__file__)[1] == '.py':
     sys.path.append(os.path.dirname(__file__))
 
-version = '0.0.0.1'
+version = '0.0.1'
 
 
 def main():
