@@ -21,8 +21,6 @@ def main():
 
     parser.add_argument('--displaymode', '-dm',
                         default=None, nargs=1, type=str)
-    
-    parser.add_argument('--launcher', '-l', action='store_true')
 
     if len(sys.argv) == 1:
         MessageBox(None, '''Usage:
@@ -30,8 +28,7 @@ gametweak.exe --executable, -e <Executable> [options]
 
 Options:
 --priority > Process Priority [high | above_normal]
---displaymode > Display Resolution [Display Mode]
---launcher > Launcher Support''', f'GameTweak {version}', 0)
+--displaymode > Display Resolution [Display Mode]''', f'GameTweak {version}', 0)
         return
 
     parse_n_run(parser.parse_args())

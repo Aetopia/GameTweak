@@ -1,5 +1,6 @@
 from argparse import Namespace
 from os import _exit
+from sys import exit
 from threading import Thread
 from time import sleep
 
@@ -8,14 +9,17 @@ from win32api import ChangeDisplaySettings
 
 from utils import *
 
+"""
+Thread handle themselves.
+"""
+
 
 def parse_n_run(namespace: Namespace):
     exe = namespace.executable
     dm = namespace.displaymode
     pri = namespace.priority
-    launch = namespace.launcher
-    process_check = False
     delay = autodelay()
+    proc_check = False
 
     print(f'''
 Executable: {str(exe)}
@@ -27,22 +31,27 @@ Priority: {str(pri).lower().capitalize()}''')
     if pri:
         pri = priority_class(pri)
         process.nice(pri)
-        if launch:
-            child_procs_priority(process, pri)
+        Thread(target=child_procs_priority, args=(
+            process, pri), name='child_procs_priority').start()
 
     if dm:
         """
         Isolates the Display Mode Handler in a separate thread.
         """
-        Thread(target=display_mode_handler, args=(exe, dm, delay)).start()
-        process_check = True
+        Thread(target=display_mode_handler, args=(
+            exe, dm, delay, process), name='display_mode_handler').start()
+        proc_check = True
 
-    if process_check:
-        while True:
-            if process.is_running() is False:
-                sleep(1)
-                _exit(0)
-            sleep(delay)
+    if proc_check:
+        Thread(target=is_proc_running, args=(
+            process,), name='is_proc_running').start()
+
+
+def is_proc_running(process):
+    while True:
+        if not process.is_running():
+            sleep(1)
+            _exit(0)
 
 
 def child_procs_priority(process, priority):
@@ -51,6 +60,7 @@ def child_procs_priority(process, priority):
     """
     child_procs = process.children
     _ = True
+    i = 0
     while _:
         if child_procs() != []:
             _ = False
@@ -59,9 +69,11 @@ def child_procs_priority(process, priority):
                     Process(child.pid).nice(priority)
                 except (psutil.AccessDenied, psutil.NoSuchProcess):
                     pass
+        sleep(1)
+        i += 1
+        if i == 60:
+            exit(0)
 
-        sleep(0.001)
-    
 
 class display_mode_handler():
     """
