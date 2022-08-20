@@ -1,14 +1,15 @@
 import os
 import sys
+
+if os.path.splitext(__file__)[1] == '.py':
+    sys.path.append(os.path.dirname(__file__))
+    
 from argparse import ArgumentParser
 from traceback import format_exc
 
 from win32api import MessageBox
 
 from execute import parse_n_run
-
-if os.path.splitext(__file__)[1] == '.py':
-    sys.path.append(os.path.dirname(__file__))
 
 version = '0.0.2'
 
