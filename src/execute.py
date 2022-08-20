@@ -81,16 +81,16 @@ class display_mode_handler():
     """
 
     def __init__(self, exe: str, dm: str, delay: int, proc) -> None:
-        self.exe = exe
+        self.exes = lambda: [exe] + \
+            [child.name for child in proc.children()]
         self.dm = display_mode(dm)
         self.delay = delay
-        self.proc = proc
         self.exceptions = psutil.NoSuchProcess, ValueError
         self.apply()
 
     def apply(self):
         apply = False
-        exes = self.exe + [child.name for child in self.proc.children()]
+        exes = self.exes()
         while True:
             try:
                 sleep(self.delay)
@@ -106,7 +106,7 @@ class display_mode_handler():
 
     def reset(self):
         reset = False
-        exes = self.exe + [child.name for child in self.proc.children()]
+        exes = self.exes()
         while True:
             try:
                 sleep(self.delay)

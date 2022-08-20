@@ -20,7 +20,7 @@ def main():
     parser.add_argument('--priority', '-p', default=None, type=str)
 
     parser.add_argument('--displaymode', '-dm',
-                        default=None, nargs=1, type=str)
+                        default=None, type=str)
 
     if len(sys.argv) == 1:
         MessageBox(None, '''Usage:
