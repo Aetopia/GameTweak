@@ -1,7 +1,7 @@
 from argparse import Namespace
 from os import _exit
 from sys import exit
-from threading import Thread
+import threading as td
 from time import sleep
 
 import psutil
@@ -31,23 +31,30 @@ Priority: {str(pri).lower().capitalize()}''')
     if pri:
         pri = priority_class(pri)
         proc.nice(pri)
-        Thread(target=child_procs_priority, args=(
+        td.Thread(target=child_procs_priority, args=(
             proc, pri), name='child_procs_priority').start()
 
     if dm:
         """
         Isolates the Display Mode Handler in a separate thread.
         """
-        Thread(target=display_mode_handler, args=(
+        td.Thread(target=display_mode_handler, args=(
             exe, dm, delay, proc), name='display_mode_handler').start()
         proc_check = True
 
+    # Triggers when GameTweak needs to monitor if a process is still running or not.
     if proc_check:
         while True:
             if not proc.is_running():
                 sleep(1)
                 _exit(0)
             sleep(1)
+
+    # Executes when GameTweak doesn't need to monitor anything.
+    for thread in td.enumerate():
+        if thread.name != 'MainThread':
+            thread.join()
+    exit(0)
 
 
 
@@ -56,20 +63,16 @@ def child_procs_priority(proc, priority):
     Set the priority of the child processes of a process.
     """
     child_procs = proc.children
-    _ = True
-    i = 0
-    while _:
+
+    for _ in range(61):
         if child_procs() != []:
-            _ = False
             for child in child_procs(recursive=True):
                 try:
                     Process(child.pid).nice(priority)
                 except (psutil.AccessDenied, psutil.NoSuchProcess):
                     pass
+            break
         sleep(1)
-        i += 1
-        if i == 60:
-            exit(0)
 
 
 class display_mode_handler():
