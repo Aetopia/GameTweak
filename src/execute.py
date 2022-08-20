@@ -10,10 +10,10 @@ from utils import *
 
 
 def parse_n_run(namespace: Namespace):
-    # For some reason, each argument is stored as a list in the namespace. (I will likely fix this in a future update.)
-    exe = namespace.executable[0]
-    dm = namespace.displaymode[0]
-    pri = namespace.priority[0]
+    exe = namespace.executable
+    dm = namespace.displaymode
+    pri = namespace.priority
+    launch = namespace.launcher
     process_check = False
     delay = autodelay()
 
@@ -25,13 +25,16 @@ Priority: {str(pri).lower().capitalize()}''')
     process = psutil.Popen(exe)
 
     if pri:
-        process.nice(priority_class(pri))
+        pri = priority_class(pri)
+        process.nice(pri)
+        if launch:
+            child_procs_priority(process, pri)
 
     if dm:
         """
         Isolates the Display Mode Handler in a separate thread.
         """
-        Thread(target=display_mode_handler, args=(exe, dm)).start()
+        Thread(target=display_mode_handler, args=(exe, dm, delay)).start()
         process_check = True
 
     if process_check:
@@ -41,18 +44,34 @@ Priority: {str(pri).lower().capitalize()}''')
                 _exit(0)
             sleep(delay)
 
-# Handlers
 
+def child_procs_priority(process, priority):
+    """
+    Set the priority of the child processes of a process.
+    """
+    child_procs = process.children
+    _ = True
+    while _:
+        if child_procs() != []:
+            _ = False
+            for child in child_procs(recursive=True):
+                try:
+                    Process(child.pid).nice(priority)
+                except (psutil.AccessDenied, psutil.NoSuchProcess):
+                    pass
+
+        sleep(0.001)
+    
 
 class display_mode_handler():
     """
     Display Mode Handler
     """
 
-    def __init__(self, exe: str, dm: str) -> None:
+    def __init__(self, exe: str, dm: str, delay: int) -> None:
         self.exe = exe
         self.dm = display_mode(dm)
-        self.delay = autodelay()
+        self.delay = delay
         self.exceptions = psutil.NoSuchProcess, ValueError
         self.apply()
 
