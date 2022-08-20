@@ -1,45 +1,39 @@
-import os
-import sys
-
-if os.path.splitext(__file__)[1] == '.py':
-    sys.path.append(os.path.dirname(__file__))
-    
-from argparse import ArgumentParser
+from time import sleep
 from traceback import format_exc
-
-from win32api import MessageBox
-
-from execute import parse_n_run
-
-version = '0.0.2'
-
+from handlers import display_mode, priority
+from win32api import MessageBoxEx
+import threading as td
+from sys import argv
+from os import chdir, path, _exit
 
 def main():
-    parser = ArgumentParser(add_help=False)
-    parser.add_argument('--executable', '-e', required=True, type=str)
+    chdir(path.dirname(argv[0]))
+    if path.exists('config.ini') is False:
+        with open('config.ini', 'w') as config:
+            config.write('''[Profiles]
+; Application.exe/Title = Priority, Resolution
+; Resolution -> 0x0
+; Priority -> Normal, High, Above Normal
+; App.exe = High, 1280x720
+''')
+    threads()
+    try:
+        while True:
+            sleep(1)
+    except KeyboardInterrupt:
+        _exit(0)
+    
 
-    parser.add_argument('--priority', '-p', default=None, type=str)
+def threads():
+    handlers = [display_mode.handler(), priority.handler()]
 
-    parser.add_argument('--displaymode', '-dm',
-                        default=None, type=str)
-
-    if len(sys.argv) == 1:
-        MessageBox(None, '''Usage:
-gametweak.exe --executable, -e <Executable> [options]
-
-Options:
---priority > Process Priority [high | above_normal]
---displaymode > Display Resolution [Display Mode]''', f'GameTweak {version}', 0)
-        return
-
-    parse_n_run(parser.parse_args())
-
+    for handler in handlers:
+        td.Thread(target=handler.apply).start()
 
 if __name__ == '__main__':
     try:
         main()
     except Exception as e:
-        MessageBox(None, format_exc(), str(e), 0)
-        os._exit(1)
-    except KeyboardInterrupt:
-        os._exit(0)
+        MessageBoxEx(0, format_exc(), f'Error: {str(e)}', 0)
+        _exit(0)
+    
