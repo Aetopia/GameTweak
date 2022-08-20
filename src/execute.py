@@ -42,19 +42,19 @@ Priority: {str(pri).lower().capitalize()}''')
             exe, dm, delay, proc), name='display_mode_handler').start()
         proc_check = True
 
-    # Triggers when GameTweak needs to monitor if a process is still running or not.
     if proc_check:
+    # Executes when GameTweak needs to monitor if a process is still running or not.
         while True:
             if not proc.is_running():
                 sleep(1)
                 _exit(0)
             sleep(1)
-
+    else:
     # Executes when GameTweak doesn't need to monitor anything.
-    for thread in td.enumerate():
-        if thread.name != 'MainThread':
-            thread.join()
-    exit(0)
+        for thread in td.enumerate():
+            if thread.name != 'MainThread':
+                thread.join()
+        exit(0)
 
 
 
