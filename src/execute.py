@@ -26,39 +26,39 @@ Executable: {str(exe)}
 Display Mode: {str(dm)}
 Priority: {str(pri).lower().capitalize()}''')
 
-    process = psutil.Popen(exe)
+    proc = psutil.Popen(exe)
 
     if pri:
         pri = priority_class(pri)
-        process.nice(pri)
+        proc.nice(pri)
         Thread(target=child_procs_priority, args=(
-            process, pri), name='child_procs_priority').start()
+            proc, pri), name='child_procs_priority').start()
 
     if dm:
         """
         Isolates the Display Mode Handler in a separate thread.
         """
         Thread(target=display_mode_handler, args=(
-            exe, dm, delay, process), name='display_mode_handler').start()
+            exe, dm, delay, proc), name='display_mode_handler').start()
         proc_check = True
 
     if proc_check:
         Thread(target=is_proc_running, args=(
-            process,), name='is_proc_running').start()
+            proc,), name='is_proc_running').start()
 
 
-def is_proc_running(process):
+def is_proc_running(proc):
     while True:
-        if not process.is_running():
-            sleep(1)
+        if not proc.is_running():
+            sleep
             _exit(0)
 
 
-def child_procs_priority(process, priority):
+def child_procs_priority(proc, priority):
     """
     Set the priority of the child processes of a process.
     """
-    child_procs = process.children
+    child_procs = proc.children
     _ = True
     i = 0
     while _:
@@ -80,19 +80,21 @@ class display_mode_handler():
     Display Mode Handler
     """
 
-    def __init__(self, exe: str, dm: str, delay: int) -> None:
+    def __init__(self, exe: str, dm: str, delay: int, proc) -> None:
         self.exe = exe
         self.dm = display_mode(dm)
         self.delay = delay
+        self.proc = proc
         self.exceptions = psutil.NoSuchProcess, ValueError
         self.apply()
 
     def apply(self):
         apply = False
+        exes = self.exe + [child.name for child in self.proc.children()]
         while True:
             try:
                 sleep(self.delay)
-                if self.exe == get_active_window():
+                if get_active_window() in exes:
                     apply = True
 
                 if apply:
@@ -104,10 +106,11 @@ class display_mode_handler():
 
     def reset(self):
         reset = False
+        exes = self.exe + [child.name for child in self.proc.children()]
         while True:
             try:
                 sleep(self.delay)
-                if self.exe != get_active_window():
+                if get_active_window() not in exes:
                     reset = True
 
                 if reset:
