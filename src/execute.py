@@ -43,15 +43,12 @@ Priority: {str(pri).lower().capitalize()}''')
         proc_check = True
 
     if proc_check:
-        Thread(target=is_proc_running, args=(
-            proc,), name='is_proc_running').start()
-
-
-def is_proc_running(proc):
-    while True:
-        if not proc.is_running():
+        while True:
+            if not proc.is_running():
+                sleep(1)
+                _exit(0)
             sleep(1)
-            _exit(0)
+
 
 
 def child_procs_priority(proc, priority):
