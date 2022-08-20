@@ -50,7 +50,7 @@ Priority: {str(pri).lower().capitalize()}''')
 def is_proc_running(proc):
     while True:
         if not proc.is_running():
-            sleep
+            sleep(1)
             _exit(0)
 
 
