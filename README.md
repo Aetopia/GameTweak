@@ -1,5 +1,5 @@
 # GameTweak
-GameTweak is a simple CLI tool that you allows to apply optimizations to your favorite games.
+GameTweak is a simple tool that you allows to apply optimizations to your favorite games.
 
 # Features
 
