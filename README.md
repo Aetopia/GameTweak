@@ -4,7 +4,7 @@ GameTweak is a simple tool that you allows to apply optimizations to your favori
 # Features
 
 - [x] Use any Display Resolution with FSB (Fullscreen Borderless) Games.
-- [x] Set Process Priority easily.
+- [x] Set the process priority of any Game with ease.
 
 # Binaries
 Find pre-compiled binaries here: [GitHub Releases](https://github.com/Aetopia/GameTweak/releases)
