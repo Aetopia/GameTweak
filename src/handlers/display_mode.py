@@ -4,7 +4,7 @@ from pywintypes import DEVMODEType
 from win32con import DM_PELSHEIGHT, DM_PELSWIDTH
 from win32api import ChangeDisplaySettings
 from time import sleep
-from utils import auto_delay
+from utils import *
 
 def display_mode(mode: str) -> DEVMODEType:
     """
@@ -62,3 +62,6 @@ class handler:
                 pass
 
         self.apply()
+    
+    def thread(self):
+        error_handler(self.apply)

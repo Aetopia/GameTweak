@@ -19,7 +19,7 @@ class winhook:
 
     def get_hook(self) -> str:
         config = ConfigParser()
-        config.read('config.ini')
+        config.read('GameTweak.ini')
 
         title, exe, _ = self.hook_process()
         profiles = config['Profiles']

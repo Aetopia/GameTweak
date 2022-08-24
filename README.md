@@ -1,5 +1,5 @@
 # GameTweak
-GameTweak is a simple CLI tool that you allows to apply optimizations to your favorite games.
+GameTweak is a simple tool that you allows to apply optimizations to your favorite games.
 
 # Features
 
@@ -13,7 +13,7 @@ Find pre-compiled binaries here: [GitHub Releases](https://github.com/Aetopia/Ga
 Check out the Docs: https://github.com/Aetopia/GameTweak/wiki
 
 # Building and Requirements
-1. Install through `pip`
+1. Install using `pip`:
     ```
     pip install nuitka ordered-set zstandard
     ```

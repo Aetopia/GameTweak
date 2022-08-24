@@ -1,8 +1,9 @@
 from time import sleep
 from psutil import (ABOVE_NORMAL_PRIORITY_CLASS, HIGH_PRIORITY_CLASS,
                     NORMAL_PRIORITY_CLASS, Process, NoSuchProcess)
-from utils import auto_delay
+from utils import *
 from winhook import winhook
+
 
 def priority_class(priority):
     """
@@ -36,14 +37,13 @@ class handler():
                     apply = True
 
                 if apply is True:
+                    pri_class = priority_class(pri)
                     process = Process(pid)
-                    process.nice(priority_class(pri))
-                    break
+                    if process.nice() != pri_class:
+                        process.nice(pri_class)
+                    apply = False
             except (self.exceptions):
                 pass
-        self.reset(process)
-            
-    def reset(self, process: Process):
-        while process.is_running():
-            sleep(self.delay)
-        self.apply()
+
+    def thread(self):
+        error_handler(self.apply)
