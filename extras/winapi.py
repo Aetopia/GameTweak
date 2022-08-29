@@ -1,3 +1,7 @@
+"""
+Windows API functions.
+"""
+
 from ctypes import windll, c_ulong, create_string_buffer, create_unicode_buffer, byref
 from ctypes import wintypes
 from codecs import decode
@@ -69,10 +73,10 @@ def GetPriorityClass(pid):
     else:
         return hex(priority_class)
 
-def SetPriorityClass(pid):
+def SetPriorityClass(pid, priority_class):
     """
     Set the priority class of the given process.
     """
     handle = OpenProcess(pid)
-    kernel32.SetPriorityClass(handle, 0x00000080)
+    kernel32.SetPriorityClass(handle, priority_class)
     kernel32.CloseHandle(handle)

@@ -1,3 +1,7 @@
+"""
+A module that provides a cheap and easy way to hook onto foreground windows.
+"""
+
 from win32gui import GetForegroundWindow, GetWindowText
 from win32process import GetWindowThreadProcessId
 from psutil import Process
@@ -14,8 +18,8 @@ class winhook:
         """
         hwnd = GetForegroundWindow()
         pid = GetWindowThreadProcessId(hwnd)[1]
-        title = GetWindowText(hwnd)
-        return title, path.split(Process(pid).exe())[1], pid
+        title = str(GetWindowText(hwnd))
+        return title.lower(), path.split(Process(pid).exe())[1].lower(), pid
 
     def get_hook(self) -> str:
         config = ConfigParser()

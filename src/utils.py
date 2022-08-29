@@ -1,7 +1,6 @@
-from multiprocessing import cpu_count
 from traceback import format_exc
 from win32api import MessageBox
-from os import _exit
+from os import _exit, cpu_count
 
 def auto_delay() -> float:
     """

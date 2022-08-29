@@ -6,7 +6,7 @@ from pathlib import Path
 for path in Path('src').glob('**/__pycache__'):
        rmtree(path)
 
-version = '1.0.0'
+version = '1.1.0'
 files = [f'--include-plugin-files={file}' for file in Path('src').rglob('**/*.py')]
 files.remove('--include-plugin-files=src\\main.py')
 
