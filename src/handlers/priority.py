@@ -1,7 +1,12 @@
 from time import sleep
-from psutil import (ABOVE_NORMAL_PRIORITY_CLASS, HIGH_PRIORITY_CLASS,
-                    NORMAL_PRIORITY_CLASS, Process, NoSuchProcess)
+
+from pywintypes import error
 from utils import *
+from win32api import CloseHandle, OpenProcess
+from win32con import PROCESS_ALL_ACCESS
+from win32process import (ABOVE_NORMAL_PRIORITY_CLASS, HIGH_PRIORITY_CLASS,
+                          NORMAL_PRIORITY_CLASS, GetPriorityClass,
+                          SetPriorityClass)
 from winhook import winhook
 
 
@@ -22,27 +27,30 @@ def priority_class(priority):
 class handler():
     def __init__(self) -> None:
         self.delay = auto_delay()
-        self.exceptions = NoSuchProcess, ValueError
         pass
 
     def apply(self):
         apply = False
+
         while True:
             try:
                 sleep(self.delay)
-                hook, hooked_process = winhook().get_hook(), winhook().hook_process()
+                hook, hooked_process, hProc = winhook().get_hook(), winhook().hook_process(), 0
+
                 if hook is not None:
-                    pri = hook.split(',')[0]
+                    pri = priority_class(hook.split(',')[0])
                     _, _, pid = hooked_process
+                    hProc = OpenProcess(PROCESS_ALL_ACCESS, False, pid)
                     apply = True
 
                 if apply is True:
-                    pri_class = priority_class(pri)
-                    process = Process(pid)
-                    if process.nice() != pri_class:
-                        process.nice(pri_class)
+                    if GetPriorityClass(hProc) != pri:
+                        SetPriorityClass(hProc, pri)
                     apply = False
-            except (self.exceptions):
+
+                if hProc != 0:
+                    CloseHandle(hProc)
+            except error:
                 pass
 
     def thread(self):

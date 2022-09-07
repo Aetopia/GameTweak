@@ -19,6 +19,6 @@ Check out the Docs: https://github.com/Aetopia/GameTweak/wiki
     ```
 2. Fetch GameTweak `pip` packages:
     ```
-    pip install pywin32 psutil
+    pip install pywin32
     ```
 3. Run `build.py` to compile GameTweak.

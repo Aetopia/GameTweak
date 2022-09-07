@@ -1,6 +1,5 @@
 from winhook import winhook
-from psutil import NoSuchProcess
-from pywintypes import DEVMODEType
+from pywintypes import DEVMODEType, error
 from win32con import DM_PELSHEIGHT, DM_PELSWIDTH
 from win32api import ChangeDisplaySettings
 from time import sleep
@@ -23,7 +22,6 @@ class handler:
     """
     def __init__(self) -> None:
         self.delay = auto_delay()
-        self.exceptions = NoSuchProcess, ValueError
 
     def apply(self):
         apply = False
@@ -40,7 +38,7 @@ class handler:
                     ChangeDisplaySettings(dm, 0)
                     break
 
-            except (self.exceptions):
+            except error:
                 pass
             
         self.reset()
@@ -58,7 +56,7 @@ class handler:
                 if reset:
                     ChangeDisplaySettings(None, 0)
                     break
-            except (self.exceptions):
+            except error:
                 pass
 
         self.apply()
